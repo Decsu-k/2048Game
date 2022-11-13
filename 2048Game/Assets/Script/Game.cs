@@ -247,7 +247,7 @@ public class Game : MonoBehaviour
         if (movingTileValue == collidingTileValue && !movingTile.GetComponent<Tile>().mergedThisTurn && !collidingTile.GetComponent<Tile>().mergedThisTurn)
         {
             Destroy (movingTile.gameObject);
-            Destroy(collidingTile.gameObject);
+            Destroy (collidingTile.gameObject);
 
             grid[(int)pos.x, (int)pos.y] = null;
 
@@ -261,7 +261,7 @@ public class Game : MonoBehaviour
 
             UpdateGrid();
             
-            score += movingTileValue * 2;
+            score += movingTileValue * 20; //Error 32x32 tile
 
             UpdateScore();
 
@@ -373,5 +373,17 @@ public class Game : MonoBehaviour
     public void PlayAgain()
     {
         grid = new Transform[gridWidth, gridHeight];
+        score = 0;
+
+        List<GameObject> children = new List<GameObject>();
+        foreach (Transform t in transform)
+        {
+            children.Add(t.gameObject);
+        }
+
+        children.ForEach(t => DestroyImmediate(t));
+        gameOverCanvas.gameObject.SetActive(false);
+        UpdateScore();
+        GenerateNewTile(2);
     }
 }
