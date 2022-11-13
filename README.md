@@ -11,19 +11,19 @@
 
 5.Сhecking the end of the game
 
+6.Restart the game
+
 # 
 # It is necessary to perform
 1.Adding animation
 
-2.Restart the game
+2.Saving the result of the game
 
-3.Saving the result of the game
+3.Saving the best result
 
-4.Saving the best result
+4.Add Sounds
 
-5.Add Sounds
-
-6.Canceling a move
+5.Canceling a move
 
 # Errors
 Incorrect counting of connected tiles in the result of the game
