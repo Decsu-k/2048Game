@@ -18,6 +18,10 @@ public class Game : MonoBehaviour
 
     public CFDebug debug;
 
+    private int numberOfCoroutinesRunning = 0;
+
+    private bool generatedNewTileThisTurn = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,13 +31,22 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!CheckGameOver())
+        if (numberOfCoroutinesRunning == 0)
         {
-            CheckUserInput();
-        } 
-        else
-        {
-            gameOverCanvas.gameObject.SetActive(true);
+            if (!generatedNewTileThisTurn)
+            {
+                generatedNewTileThisTurn = true;
+                GenerateNewTile(1);
+            }
+
+            if (!CheckGameOver())
+            {
+                    CheckUserInput();
+            }
+            else
+            {
+                gameOverCanvas.gameObject.SetActive(true);
+            }
         }
     }
 
@@ -287,10 +300,15 @@ public class Game : MonoBehaviour
             GameObject newTile = (GameObject)Instantiate(Resources.Load(tile, typeof(GameObject)), locationForNewTile, Quaternion.identity);
 
             newTile.transform.parent = transform;
+
+            grid[(int)newTile.transform.localPosition.x, (int)newTile.transform.localPosition.y] = newTile.transform;
+
+            newTile.transform.localScale = new Vector2(0, 0);
+
+            newTile.transform.localPosition = new Vector2(newTile.transform.localPosition.x + 0.5f, newTile.transform.localPosition.y + 0.5f);
+
+            StartCoroutine(NewTilePopIn(newTile, new Vector2(0,0), new Vector2(1,1), 10f, newTile.transform.localPosition, new Vector2 (newTile.transform.localPosition.x - 0.5f, newTile.transform.localPosition.y - 0.5f)));
         }
-
-        UpdateGrid();
-
     }
 
     void UpdateGrid()
@@ -385,5 +403,25 @@ public class Game : MonoBehaviour
         gameOverCanvas.gameObject.SetActive(false);
         UpdateScore();
         GenerateNewTile(2);
+    }
+
+    IEnumerator NewTilePopIn (GameObject tile, Vector2 initialScale, Vector2 finalScale, float timeScale, Vector2 inirialPosition, Vector2 finalPosition)
+    {
+        numberOfCoroutinesRunning++;
+
+        float progress = 0;
+        
+        while (progress <= 1)
+        {
+            tile.transform.localScale = Vector2.Lerp(initialScale, finalScale, progress);
+            tile.transform.localPosition = Vector2.Lerp(inirialPosition, finalScale, progress);
+            progress += Time.deltaTime * timeScale;
+            yield return null;
+        }
+
+        tile.transform.localScale = finalScale;
+        tile.transform.localPosition = finalPosition;
+
+        numberOfCoroutinesRunning--;
     }
 }
